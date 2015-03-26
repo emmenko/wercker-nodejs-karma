@@ -1,5 +1,5 @@
 name : wercker-nodejs-karma
-version : 0.2.0
+version : 0.3.0
 description: Node.js 0.10 (latest) with npm 2.7.x configured to run Karma browsers (Chrome and Firefox)
 inherits : wercker/ubuntu12.04-webessentials@1.0.4
 type : main
