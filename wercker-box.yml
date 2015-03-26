@@ -38,11 +38,11 @@ default-build:
                 echo "npm version $(npm -v) running"
 script: |
   sudo apt-get update
-  sudo apt-get install wget build-essential xvfb chromium-browser firefox
-  export DISPLAY=:99.0
-  export CHROME_BIN=/usr/bin/chromium-browser
-  start-stop-daemon --start --quiet --pidfile /tmp/xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1024x768x24 -ac +extension GLX +render -noreset
-  sleep 5
+  sudo apt-get install wget build-essential xvfb chromium-browser firefox -y
+  chmod +x xvfb.sh
+  sudo cp xvfb.sh /etc/init.d/xvfb
+  sudo update-rc.d xvfb defaults
+  sudo service xvfb start
   export NODEVERSION=0.10.38
   export NPMVERSION=2.7.3
   cd $HOME
@@ -59,3 +59,6 @@ script: |
   node -v
   sudo chown -R $USER /usr/local
   npm i -g npm@$NPMVERSION
+env:
+  DISPLAY: ":99.0"
+  CHROME_BIN: "/usr/bin/chromium-browser"
