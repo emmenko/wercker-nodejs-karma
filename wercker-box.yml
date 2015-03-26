@@ -1,0 +1,61 @@
+name : wercker-nodejs-karma
+version : 0.0.1
+description: Node.js 0.10 (latest) with npm 2.7.x configured to run Karma browsers (Chrome and Firefox)
+inherits : wercker/ubuntu12.04-webessentials@1.0.4
+type : main
+platform : ubuntu@12.04
+packages :
+  - nodejs@0.10
+keywords:
+  - nodejs
+box-detect:
+  priority : 1000
+  version :
+  detect:
+    - files:
+      - package.json
+default-build:
+  nodejs:
+    priority : 50
+    detect:
+      - default: true
+    text-to-append: |
+      # Build definition
+      build:
+        # The steps that will be executed on build
+        steps:
+          # A step that executes `npm install` command
+          - npm-install
+          # A step that executes `npm test` command
+          - npm-test
+
+          # A custom script step, name value is used in the UI
+          # and the code value contains the command that get executed
+          - script:
+              name: echo nodejs information
+              code: |
+                echo "node version $(node -v) running"
+                echo "npm version $(npm -v) running"
+script: |
+  sudo apt-get install xvfb chromium-browser
+  export DISPLAY=:99.0
+  export CHROME_BIN=/usr/bin/chromium-browser
+  start-stop-daemon --start --quiet --pidfile /tmp/xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -screen 0 1024x768x24 -ac +extension GLX +render -noreset
+  sleep 5
+  export NODEVERSION=0.10.38
+  export NPMVERSION=2.7.3
+  sudo apt-get update
+  sudo apt-get install wget build-essential
+  cd $HOME
+  mkdir nodeinstall
+  cd nodeinstall
+  wget http://nodejs.org/dist/v$NODEVERSION/node-v$NODEVERSION.tar.gz
+  tar xzf node-v$NODEVERSION.tar.gz
+  cd node-v$NODEVERSION
+  ./configure
+  make
+  sudo make install
+  cd $HOME
+  rm -fr nodeinstall
+  node -v
+  npm i -g npm@$NPMVERSION
